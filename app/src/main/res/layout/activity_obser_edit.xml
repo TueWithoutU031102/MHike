@@ -1,0 +1,87 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="16dp"
+        android:text="Observation Edit"
+        android:textSize="24sp" />
+
+    <EditText
+        android:id="@+id/inputObId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Name:" />
+    <EditText
+        android:id="@+id/inputObName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Observation"
+        android:inputType="text" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Time:" />
+    <EditText
+        android:id="@+id/inputObTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Time of Observation"
+        android:inputType="time" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Comment:" />
+    <EditText
+        android:id="@+id/inputObComment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Additional Comments"
+        android:inputType="textMultiLine" />
+
+    <EditText
+        android:id="@+id/inputHikeId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnEditObs"
+                android:layout_width="75dp"
+                android:layout_height="wrap_content"
+                android:text="Edit" />
+
+            <Button
+                android:id="@+id/btnDeleteObs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Delete" />
+
+            <Button
+                android:id="@+id/btnBackObs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Back" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

@@ -9,22 +9,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        tools:context=".view">
-
-        <EditText
-            android:id="@+id/search"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Enter hike name to search" />
-
-        <Button
-            android:id="@+id/searchButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Search" />
+        tools:context=".viewObser">
 
         <ListView
-            android:id="@+id/lstTrip"
+            android:id="@+id/lstObser"
             android:layout_width="match_parent"
             android:layout_height="300dp" />
 
@@ -34,7 +22,7 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/createButton"
+                android:id="@+id/btncreateObser"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Create" />

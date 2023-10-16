@@ -11,12 +11,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.TimePicker;
 import android.widget.Toast;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     EditText inputTName, inputLocation, inputLength, inputDescription, inputTime, inputDate;
@@ -99,10 +100,24 @@ public class MainActivity extends AppCompatActivity {
             String description = inputDescription.getText().toString();
             String time = inputTime.getText().toString();
 
-            SQLiteDatabase db = openOrCreateDatabase("Trip", Context.MODE_PRIVATE, null);
-            db.execSQL("DROP TABLE records");
-            db.execSQL("CREATE TABLE IF NOT EXISTS records (id INTEGER PRIMARY KEY AUTOINCREMENT, tripName VARCHAR,location VARCHAR, length VARCHAR, level VARCHAR,description VARCHAR,date VARCHAR, parkingStatus VARCHAR, time VARCHAR)");
-            String sql = "insert into records(tripName,location,date,parkingStatus,length,level,description,time)values(?,?,?,?,?,?,?,?)";
+            if(tripName.isEmpty()||location.isEmpty()||date.isEmpty()||length.isEmpty()||level.isEmpty()||time.isEmpty())
+            {
+                Toast.makeText(this, "Please enter all required information", Toast.LENGTH_LONG).show();
+                return;
+            }
+            if (!isValidDate(date)) {
+                Toast.makeText(this, "Please enter a valid date (dd/MM/yyyy)", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            if (!isValidTime(time)) {
+                Toast.makeText(this, "Please enter a valid time (HH:mm)", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            SQLiteDatabase db = openOrCreateDatabase("MHike", Context.MODE_PRIVATE, null);
+            db.execSQL("CREATE TABLE IF NOT EXISTS triphike (id INTEGER PRIMARY KEY AUTOINCREMENT, tripName VARCHAR,location VARCHAR, length VARCHAR, level VARCHAR,description VARCHAR,date VARCHAR, parkingStatus VARCHAR, time VARCHAR)");
+            String sql = "insert into triphike(tripName,location,date,parkingStatus,length,level,description,time)values(?,?,?,?,?,?,?,?)";
 
             SQLiteStatement statement = db.compileStatement(sql);
             statement.bindString(1, tripName);
@@ -128,5 +143,26 @@ public class MainActivity extends AppCompatActivity {
             Log.e("InsertError", ex.toString());
             Toast.makeText(this, "Record Fail", Toast.LENGTH_LONG).show();
         }
+    }
+    private boolean isValidDate(String inputDate) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        dateFormat.setLenient(false);
+        try {
+            dateFormat.parse(inputDate.trim());
+        } catch (ParseException pe) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isValidTime(String inputTime) {
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        timeFormat.setLenient(false);
+        try {
+            timeFormat.parse(inputTime.trim());
+        } catch (ParseException pe) {
+            return false;
+        }
+        return true;
     }
 }

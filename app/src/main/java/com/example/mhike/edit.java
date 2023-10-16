@@ -4,27 +4,30 @@ import static android.content.Context.*;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 public class edit extends AppCompatActivity {
-    EditText inputId,inputTName, inputLocation, inputLength, inputDescription, inputTime, inputDate;
+    EditText inputId, inputTName, inputLocation, inputLength, inputDescription, inputTime, inputDate;
     CheckBox cbParking;
     RadioGroup radioGroup;
     RadioButton btnEasy, btnMedium, btnHard;
-    Button editButton, deleteButton, backButton;
+    Button editButton, deleteButton, backButton, obserButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +35,7 @@ public class edit extends AppCompatActivity {
         setContentView(R.layout.activity_edit);
 
         inputId = findViewById(R.id.inputId);
+        inputId.setVisibility(View.GONE);
         inputTName = findViewById(R.id.inputTName);
         inputLocation = findViewById(R.id.inputLocation);
         inputDate = findViewById(R.id.inputDate);
@@ -66,6 +70,7 @@ public class edit extends AppCompatActivity {
         editButton = findViewById(R.id.editButton);
         deleteButton = findViewById(R.id.deleteButton);
         backButton = findViewById(R.id.backButton);
+        obserButton = findViewById(R.id.obserButton);
 
         Intent i = getIntent();
         String t1 = i.getStringExtra("id").toString();
@@ -102,6 +107,8 @@ public class edit extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Delete();
+                Intent i = new Intent(getApplicationContext(), view.class);
+                startActivity(i);
             }
         });
         editButton.setOnClickListener(new View.OnClickListener() {
@@ -117,31 +124,41 @@ public class edit extends AppCompatActivity {
                 startActivity(i);
             }
         });
+        obserButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getApplicationContext(), obser.class);
+                i.putExtra("hike_id", inputId.getText().toString());
+                startActivity(i);
+            }
+        });
     }
 
     public void Delete() {
         try {
             String id = inputId.getText().toString();
+            if (hasObservations(id)) {
+                Toast.makeText(this, "Still have observations containing this item's ID. Please delete the observations first.", Toast.LENGTH_LONG).show();
+            } else {
+                SQLiteDatabase db = openOrCreateDatabase("MHike", Context.MODE_PRIVATE, null);
 
-            SQLiteDatabase db = openOrCreateDatabase("Trip",Context.MODE_PRIVATE,null);
+                String sql = "delete from triphike where id = ?";
+                SQLiteStatement statement = db.compileStatement(sql);
 
-            String sql = "delete from records where id = ?";
-            SQLiteStatement statement = db.compileStatement(sql);
+                statement.bindString(1, id);
+                statement.execute();
+                Toast.makeText(this, "Record Deleted", Toast.LENGTH_LONG).show();
 
-            statement.bindString(1,id);
-            statement.execute();
-            Toast.makeText(this,"Record Deleted",Toast.LENGTH_LONG).show();
-
-            inputTName.setText("");
-            inputLocation.setText("");
-            inputDate.setText("");
-            inputLength.setText("");
-            inputDescription.setText("");
-            inputTime.setText("");
-            inputTName.requestFocus();
-
+                inputTName.setText("");
+                inputLocation.setText("");
+                inputDate.setText("");
+                inputLength.setText("");
+                inputDescription.setText("");
+                inputTime.setText("");
+                inputTName.requestFocus();
+            }
         } catch (Exception ex) {
-            Toast.makeText(this,"Record Fail",Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Record Fail", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -151,8 +168,7 @@ public class edit extends AppCompatActivity {
             String location = inputLocation.getText().toString();
             String date = inputDate.getText().toString();
             String parkingStatus;
-            if (cbParking.isChecked()) parkingStatus = "Yes";
-            else parkingStatus = "No";
+            parkingStatus = cbParking.isChecked() ? "Yes" : "No";
             String length = inputLength.getText().toString();
             String level = "";
             int selectedId = radioGroup.getCheckedRadioButtonId();
@@ -163,8 +179,22 @@ public class edit extends AppCompatActivity {
             String description = inputDescription.getText().toString();
             String time = inputTime.getText().toString();
 
-            SQLiteDatabase db = openOrCreateDatabase("Trip", Context.MODE_PRIVATE, null);
-            String sql = "update records set tripName = ?,location = ?,date = ?,parkingStatus = ?,length = ?,level = ?,description = ?,time = ? where id= ?";
+            if (tripName.isEmpty() || location.isEmpty() || date.isEmpty() || length.isEmpty() || level.isEmpty() || time.isEmpty()) {
+                Toast.makeText(this, "Please enter all required information", Toast.LENGTH_LONG).show();
+                return;
+            }
+            if (!isValidDate(date)) {
+                Toast.makeText(this, "Please enter a valid date (dd/MM/yyyy)", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            if (!isValidTime(time)) {
+                Toast.makeText(this, "Please enter a valid time (HH:mm)", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            SQLiteDatabase db = openOrCreateDatabase("MHike", Context.MODE_PRIVATE, null);
+            String sql = "update triphike set tripName = ?,location = ?,date = ?,parkingStatus = ?,length = ?,level = ?,description = ?,time = ? where id= ?";
             SQLiteStatement statement = db.compileStatement(sql);
             statement.bindString(1, tripName);
             statement.bindString(2, location);
@@ -185,8 +215,39 @@ public class edit extends AppCompatActivity {
             inputTime.setText("");
             inputTName.requestFocus();
         } catch (Exception ex) {
-            Toast.makeText(this,"Record Fail",Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Record Fail", Toast.LENGTH_LONG).show();
         }
+    }
+
+    private boolean isValidDate(String inputDate) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        dateFormat.setLenient(false);
+        try {
+            dateFormat.parse(inputDate.trim());
+        } catch (ParseException pe) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isValidTime(String inputTime) {
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        timeFormat.setLenient(false);
+        try {
+            timeFormat.parse(inputTime.trim());
+        } catch (ParseException pe) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean hasObservations(String hikeId) {
+        SQLiteDatabase db = openOrCreateDatabase("MHike", Context.MODE_PRIVATE, null);
+        String query = "SELECT * FROM observation WHERE hike_id = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{hikeId});
+        boolean hasData = cursor.moveToFirst();
+        cursor.close();
+        return hasData;
     }
 }
 

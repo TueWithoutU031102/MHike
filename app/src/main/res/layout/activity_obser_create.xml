@@ -1,0 +1,64 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="16dp"
+        android:text="Observation Details"
+        android:textSize="24sp" />
+
+    <EditText
+        android:id="@+id/inputObName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Observation"
+        android:inputType="text" />
+
+    <EditText
+        android:id="@+id/inputObTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Time of Observation"
+        android:inputType="time" />
+
+    <EditText
+        android:id="@+id/inputObComment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Additional Comments"
+        android:inputType="textMultiLine" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnAddOb"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="Add" />
+
+        <Button
+            android:id="@+id/btnViewOb"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="View" />
+
+        <Button
+            android:id="@+id/btnBackHike"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Back" />
+    </LinearLayout>
+</LinearLayout>
+
+
+
+

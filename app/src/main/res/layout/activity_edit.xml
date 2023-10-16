@@ -26,6 +26,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:text="ID" />
 
         <EditText
@@ -210,9 +211,15 @@
 
             <Button
                 android:id="@+id/editButton"
-                android:layout_width="wrap_content"
+                android:layout_width="75dp"
                 android:layout_height="wrap_content"
                 android:text="Edit" />
+
+            <Button
+                android:id="@+id/obserButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Observation" />
 
             <Button
                 android:id="@+id/deleteButton"

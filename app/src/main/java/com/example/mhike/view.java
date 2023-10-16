@@ -11,14 +11,16 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import java.util.ArrayList;
 
 public class view extends AppCompatActivity {
 
-    ListView lst1;
-    Button createButton;
+    EditText search;
+    ListView lstTrip;
+    Button createButton,searchButton;
     ArrayList<String> titles = new ArrayList<String>();
     ArrayAdapter arrayAdapter;
 
@@ -27,10 +29,10 @@ public class view extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view);
 
-        SQLiteDatabase db = openOrCreateDatabase("Trip", Context.MODE_PRIVATE, null);
+        SQLiteDatabase db = openOrCreateDatabase("MHike", Context.MODE_PRIVATE, null);
 
-        lst1 = findViewById(R.id.lst1);
-        final Cursor c = db.rawQuery("select * from records", null);
+        lstTrip = findViewById(R.id.lstTrip);
+        final Cursor c = db.rawQuery("select * from triphike", null);
         int id = c.getColumnIndex("id");
         int tripName = c.getColumnIndex("tripName");
         int location = c.getColumnIndex("location");
@@ -43,7 +45,7 @@ public class view extends AppCompatActivity {
         titles.clear();
 
         arrayAdapter = new ArrayAdapter<>(this, androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, titles);
-        lst1.setAdapter(arrayAdapter);
+        lstTrip.setAdapter(arrayAdapter);
 
         final ArrayList<trip> trips = new ArrayList<trip>();
         if (c.moveToFirst()) {
@@ -63,10 +65,10 @@ public class view extends AppCompatActivity {
                 titles.add("ID: " + c.getString(id) + " | " + "Name: " + c.getString(tripName) + " | " + "Location: " + c.getString(location) + " | " + "Date: " + c.getString(date));
             } while (c.moveToNext());
             arrayAdapter.notifyDataSetChanged();
-            lst1.invalidateViews();
+            lstTrip.invalidateViews();
         }
 
-        lst1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        lstTrip.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String aa = titles.get(position).toString();
@@ -92,6 +94,45 @@ public class view extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        search = findViewById(R.id.search);
+        searchButton = findViewById(R.id.searchButton);
+
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String searchText = search.getText().toString();
+                performSearch(searchText);
+            }
+        });
+    }
+    private void performSearch(String searchText) {
+        ArrayList<String> searchTitles = new ArrayList<>();
+
+        SQLiteDatabase db = openOrCreateDatabase("MHike", Context.MODE_PRIVATE, null);
+        Cursor c = db.rawQuery("SELECT * FROM triphike WHERE tripName LIKE '%" + searchText + "%'", null);
+
+        int id = c.getColumnIndex("id");
+        int tripName = c.getColumnIndex("tripName");
+        int location = c.getColumnIndex("location");
+        int date = c.getColumnIndex("date");
+
+        searchTitles.clear();
+
+        if (c.moveToFirst()) {
+            do {
+                trip Trip = new trip();
+                Trip.id = c.getString(id);
+                Trip.tripName = c.getString(tripName);
+                Trip.location = c.getString(location);
+                Trip.date = c.getString(date);
+                searchTitles.add("ID: " + c.getString(id) + " | " + "Name: " + c.getString(tripName) + " | " + "Location: " + c.getString(location) + " | " + "Date: " + c.getString(date));
+            } while (c.moveToNext());
+        }
+
+        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, searchTitles);
+        lstTrip.setAdapter(arrayAdapter);
+        arrayAdapter.notifyDataSetChanged();
+        lstTrip.invalidateViews();
     }
 }
 
