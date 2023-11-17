@@ -34,8 +34,6 @@ public class viewObser extends AppCompatActivity {
         final Cursor o = db.rawQuery("select * from observation", null);
         int id = o.getColumnIndex("id");
         int ObName = o.getColumnIndex("ObName");
-        int ObTime = o.getColumnIndex("ObTime");
-        int ObComment = o.getColumnIndex("ObComment");
         int hike_id = o.getColumnIndex("hike_id");
         titles.clear();
 
@@ -47,12 +45,10 @@ public class viewObser extends AppCompatActivity {
                 observation Obs = new observation();
                 Obs.id = o.getString(id);
                 Obs.ObName = o.getString(ObName);
-                Obs.ObTime = o.getString(ObTime);
-                Obs.ObComment = o.getString(ObComment);
                 Obs.hike_id = o.getString(hike_id);
                 obs.add(Obs);
 
-                titles.add("ID: " + o.getString(id) + " | " + "Name: " + o.getString(ObName) + " | " + "Time: " + o.getString(ObTime) + " | " + "Comment: " + o.getString(ObComment) + "|" + "HikeID:" + o.getString(hike_id));
+                titles.add("ID: " + o.getString(id) + " | " + "Name: " + o.getString(ObName) + " | " + "|" + "HikeID:" + o.getString(hike_id));
 
             } while (o.moveToNext());
             arrayAdapter.notifyDataSetChanged();

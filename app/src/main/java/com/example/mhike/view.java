@@ -20,7 +20,7 @@ public class view extends AppCompatActivity {
 
     EditText search;
     ListView lstTrip;
-    Button createButton,searchButton;
+    Button createButton,searchButton, deleteButton;
     ArrayList<String> titles = new ArrayList<String>();
     ArrayAdapter arrayAdapter;
 
@@ -104,6 +104,21 @@ public class view extends AppCompatActivity {
                 performSearch(searchText);
             }
         });
+
+        deleteButton = findViewById(R.id.deleteButton);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Delete();
+                Intent i = new Intent(getApplicationContext(), view.class);
+                startActivity(i);
+            }
+        });
+    }
+    public void Delete()
+    {
+        SQLiteDatabase db = openOrCreateDatabase("MHike", Context.MODE_PRIVATE, null);
+        db.execSQL("DELETE FROM triphike");
     }
     private void performSearch(String searchText) {
         ArrayList<String> searchTitles = new ArrayList<>();
